@@ -3,5 +3,6 @@ test.pdf
 invoice.py
 app.log
 /output
+/uploads
 
 __pycache__/

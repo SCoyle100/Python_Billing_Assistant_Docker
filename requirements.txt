@@ -1,5 +1,5 @@
 flask
 python-dotenv
-adobe-pdfservices-sdk
+pdfservices-sdk==4.1.0
 python-docx
 openai

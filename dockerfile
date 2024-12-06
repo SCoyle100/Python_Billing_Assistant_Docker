@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
 EXPOSE 5000
 
 # Set environment variables
-ENV FLASK_APP=app.py
+ENV FLASK_APP=main.py
 ENV FLASK_RUN_HOST=0.0.0.0
 ENV FLASK_ENV=production
 
