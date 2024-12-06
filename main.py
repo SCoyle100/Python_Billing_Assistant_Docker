@@ -1,9 +1,11 @@
 import os
 import logging
 from flask import Flask, request, redirect, url_for, send_from_directory, jsonify
+from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from datetime import datetime
+
 import docx
 from adobe.pdfservices.operation.auth.service_principal_credentials import ServicePrincipalCredentials
 from adobe.pdfservices.operation.exception.exceptions import ServiceApiException, ServiceUsageException, SdkException
@@ -20,6 +22,7 @@ logging.basicConfig(level=logging.INFO)
 
 # Flask app setup
 app = Flask(__name__)
+CORS(app)
 app.config["UPLOAD_FOLDER"] = "./uploads"
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
