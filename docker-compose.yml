@@ -4,17 +4,26 @@ services:
     build:
       context: .
     ports:
-      - "5000:5000" # Flask backend
+      - "5000:5000"
     volumes:
-      - ./uploads:/app/uploads # Persist uploads directory
+      - ./uploads:/app/uploads
     env_file:
-      - .env # Load environment variables for Flask app
+      - .env
+    networks:
+      - app-network
 
   react-app:
     build:
       context: ./frontend
     ports:
-      - "3000:3000" # React frontend
+      - "3000:3000"
     environment:
-      - REACT_APP_API_URL=http://localhost:5000 # Flask backend URL
+      - REACT_APP_API_URL=http://flask-app:5000
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
 
