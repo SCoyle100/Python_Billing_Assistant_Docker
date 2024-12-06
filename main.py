@@ -30,8 +30,40 @@ os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 load_dotenv()
 
 class PDFConverter:
-    # Existing implementation
-    pass
+    def __init__(self):
+        self.word = None
+        self.doc = None
+
+    def convert_pdf_to_docx(self, input_path):
+        try:
+            with open(input_path, 'rb') as file:
+                input_stream = file.read()
+
+            load_dotenv()
+
+            credentials = ServicePrincipalCredentials(
+                client_id=os.getenv('PDF_SERVICES_CLIENT_ID'),
+                client_secret=os.getenv('PDF_SERVICES_CLIENT_SECRET')
+            )
+
+            pdf_services = PDFServices(credentials=credentials)
+            input_asset = pdf_services.upload(input_stream=input_stream, mime_type=PDFServicesMediaType.PDF)
+            export_pdf_params = ExportPDFParams(target_format=ExportPDFTargetFormat.DOCX)
+            export_pdf_job = ExportPDFJob(input_asset=input_asset, export_pdf_params=export_pdf_params)
+            location = pdf_services.submit(export_pdf_job)
+            pdf_services_response = pdf_services.get_job_result(location, ExportPDFResult)
+            result_asset = pdf_services_response.get_result().get_asset()
+            stream_asset = pdf_services.get_content(result_asset)
+
+            output_file_path = self.create_output_file_path(input_path)
+            with open(output_file_path, "wb") as file:
+                file.write(stream_asset.get_input_stream())
+
+            return output_file_path
+
+        except (ServiceApiException, ServiceUsageException, SdkException) as e:
+            logging.exception(f'Exception encountered while executing operation: {e}')
+            return None
 
 @app.route("/", methods=["POST"])
 def upload_and_convert():

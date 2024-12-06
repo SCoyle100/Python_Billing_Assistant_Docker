@@ -10,7 +10,7 @@ const App = () => {
   // Handle file input change
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
-    console.log("Selected file:", selectedFile);
+    //console.log("Selected file:", selectedFile);
   };
 
   // Handle form submission
@@ -25,7 +25,7 @@ const App = () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    console.log("FormData contents:", formData.get("file"));
+    //console.log("FormData contents:", formData.get("file"));
 
     try {
       setMessage("Uploading and converting...");
