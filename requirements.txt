@@ -1,0 +1,5 @@
+flask
+python-dotenv
+adobe-pdfservices-sdk
+python-docx
+openai
