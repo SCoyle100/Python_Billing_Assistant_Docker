@@ -64,6 +64,18 @@ class PDFConverter:
         except (ServiceApiException, ServiceUsageException, SdkException) as e:
             logging.exception(f'Exception encountered while executing operation: {e}')
             return None
+        
+
+    def create_output_file_path(self, input_path):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        output_dir = os.path.join(script_dir, "output")
+        os.makedirs(output_dir, exist_ok=True)
+
+        base_name = os.path.basename(input_path)
+        file_name, _ = os.path.splitext(base_name)
+        output_file_path = os.path.join(output_dir, f"{file_name}.docx")
+
+        return output_file_path        
 
 @app.route("/", methods=["POST"])
 def upload_and_convert():
