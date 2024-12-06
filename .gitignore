@@ -1,0 +1,7 @@
+.env
+test.pdf
+invoice.py
+app.log
+/output
+
+__pycache__/
