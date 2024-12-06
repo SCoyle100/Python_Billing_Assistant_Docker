@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  flask-app:
+    build:
+      context: .
+    ports:
+      - "5000:5000" # Map port 5000 of the container to port 5000 on the host
+    volumes:
+      - ./uploads:/app/uploads # Persist uploads directory
+    env_file:
+      - .env # Load environment variables from the .env file
