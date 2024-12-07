@@ -18,30 +18,36 @@ const App = () => {
     e.preventDefault();
 
     if (!file) {
-      setMessage("Please select a file to upload.");
-      return;
+        setMessage("Please select a file to upload.");
+        return;
     }
 
     const formData = new FormData();
     formData.append("file", file);
 
-    //console.log("FormData contents:", formData.get("file"));
-
     try {
-      setMessage("Uploading and converting...");
-      setDownloadLink("");
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/`, formData, {
-        headers: {
-            "Content-Type": "multipart/form-data",
-        },
-    });
-      setMessage("Conversion successful!");
-      setDownloadLink(response.data); // Assuming the backend sends back the download URL
+        setMessage("Uploading and converting...");
+        setDownloadLink(""); // Reset the download link
+
+        const response = await axios.post(`${process.env.REACT_APP_API_URL}/`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+        });
+
+        console.log("Backend response:", response.data); // Debug response
+
+        // Ensure we set the correct URL
+        if (response.data.download_url) {
+            setMessage("Conversion successful!");
+            setDownloadLink(response.data.download_url);
+        } else {
+            setMessage("Conversion successful, but no download link returned.");
+        }
     } catch (error) {
-      console.error(error);
-      setMessage("An error occurred during the upload or conversion.");
+        console.error("Error during upload or conversion:", error);
+        setMessage("An error occurred during the upload or conversion.");
     }
-  };
+};
+
 
   return (
     <div style={{ fontFamily: "Arial, sans-serif", padding: "20px" }}>

@@ -102,20 +102,9 @@ def upload_and_convert():
 
 @app.route("/uploads/<filename>")
 def download_file(filename):
-    output_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")  # Ensure correct path
-    file_path = os.path.join(output_folder, filename)
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename, as_attachment=True)
 
-    # Validate if the file exists
-    if not os.path.exists(file_path):
-        return jsonify({"error": "File not found"}), 404
 
-    # Serve the file with correct headers
-    return send_from_directory(
-        output_folder,
-        filename,
-        as_attachment=True,
-        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
 
 
 if __name__ == "__main__":
