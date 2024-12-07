@@ -31,15 +31,14 @@ load_dotenv()
 
 class PDFConverter:
     def __init__(self):
-        self.word = None
-        self.doc = None
+        pass
 
     def convert_pdf_to_docx(self, input_path):
         try:
             with open(input_path, 'rb') as file:
                 input_stream = file.read()
 
-            load_dotenv()
+           
 
             credentials = ServicePrincipalCredentials(
                 client_id=os.getenv('PDF_SERVICES_CLIENT_ID'),
@@ -67,15 +66,16 @@ class PDFConverter:
         
 
     def create_output_file_path(self, input_path):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        output_dir = os.path.join(script_dir, "output")
+        # Use the uploads folder for saving the output
+        output_dir = app.config["UPLOAD_FOLDER"]
         os.makedirs(output_dir, exist_ok=True)
 
         base_name = os.path.basename(input_path)
         file_name, _ = os.path.splitext(base_name)
         output_file_path = os.path.join(output_dir, f"{file_name}.docx")
 
-        return output_file_path        
+        return output_file_path
+        
 
 @app.route("/", methods=["POST"])
 def upload_and_convert():
@@ -102,7 +102,21 @@ def upload_and_convert():
 
 @app.route("/uploads/<filename>")
 def download_file(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename, as_attachment=True)
+    output_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")  # Ensure correct path
+    file_path = os.path.join(output_folder, filename)
+
+    # Validate if the file exists
+    if not os.path.exists(file_path):
+        return jsonify({"error": "File not found"}), 404
+
+    # Serve the file with correct headers
+    return send_from_directory(
+        output_folder,
+        filename,
+        as_attachment=True,
+        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
