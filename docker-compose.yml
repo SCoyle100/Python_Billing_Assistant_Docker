@@ -1,4 +1,4 @@
-version: '3.8'
+
 services:
   flask-app:
     build:
@@ -14,7 +14,7 @@ services:
 
   vue-app:
     build:
-      context: ./front_end
+      context: ./front_end/front-end-app
     ports:
       - "3000:3000"
     environment:
