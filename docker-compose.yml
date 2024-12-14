@@ -14,7 +14,7 @@ services:
 
   react-app:
     build:
-      context: ./frontend
+      context: ./front_end
     ports:
       - "3000:3000"
     environment:
