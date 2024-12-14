@@ -12,13 +12,13 @@ services:
     networks:
       - app-network
 
-  react-app:
+  vue-app:
     build:
       context: ./front_end
     ports:
       - "3000:3000"
     environment:
-      - REACT_APP_API_URL=http://flask-app:5000
+      - VUE_APP_API_URL=http://flask-app:5000
     networks:
       - app-network
 
