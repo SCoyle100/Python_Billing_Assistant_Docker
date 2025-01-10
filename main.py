@@ -38,8 +38,6 @@ class PDFConverter:
             with open(input_path, 'rb') as file:
                 input_stream = file.read()
 
-           
-
             credentials = ServicePrincipalCredentials(
                 client_id=os.getenv('PDF_SERVICES_CLIENT_ID'),
                 client_secret=os.getenv('PDF_SERVICES_CLIENT_SECRET')
@@ -63,7 +61,6 @@ class PDFConverter:
         except (ServiceApiException, ServiceUsageException, SdkException) as e:
             logging.exception(f'Exception encountered while executing operation: {e}')
             return None
-        
 
     def create_output_file_path(self, input_path):
         # Use the uploads folder for saving the output
@@ -75,7 +72,14 @@ class PDFConverter:
         output_file_path = os.path.join(output_dir, f"{file_name}.docx")
 
         return output_file_path
-        
+
+
+@app.before_request
+def redirect_to_https():
+    if request.headers.get("X-Forwarded-Proto", "http") == "http":
+        url = request.url.replace("http://", "https://")
+        return redirect(url, code=301)
+
 
 @app.route("/", methods=["POST"])
 def upload_and_convert():
@@ -95,16 +99,18 @@ def upload_and_convert():
     converter = PDFConverter()
     docx_path = converter.convert_pdf_to_docx(input_path)
     if docx_path:
+        proto = request.headers.get("X-Forwarded-Proto", "http")
         download_url = url_for("download_file", filename=os.path.basename(docx_path), _external=True)
+        if proto == "https":
+            download_url = download_url.replace("http://", "https://")
         return jsonify({"download_url": download_url})
     else:
         return jsonify({"error": "Failed to convert PDF to DOCX"}), 500
 
+
 @app.route("/uploads/<filename>")
 def download_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename, as_attachment=True)
-
-
 
 
 if __name__ == "__main__":
